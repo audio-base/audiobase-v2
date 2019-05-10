@@ -1,15 +1,9 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableHighlight,
-  StyleSheet,
-  TextInput,
-  Button
-} from 'react-native';
+import { View, Text, TouchableHighlight, StyleSheet } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { db } from '../config.js';
+import SortableList from 'react-native-sortable-list';
 
 let songsRef = db.ref('/songs'); //grab songs from the key songs in db
 
@@ -23,10 +17,11 @@ class Playlist extends React.Component {
   componentDidMount() {
     songsRef.on('value', snapshot => {
       let data = snapshot.val();
-      let songs = Object.values(data);
+      let songs = data ? Object.values(data) : [];
       let i = 0;
       for (let key in data) {
         songs[i].id = key;
+        songs[i].order = i;
         i++;
       }
       this.setState({ songs });
@@ -41,7 +36,12 @@ class Playlist extends React.Component {
     return (
       <View style={styles.playlistContainer}>
         {this.state.songs.map((song, i) => (
-          <View key={i} uri={song.uri} style={styles.songContainer}>
+          <View
+            key={i}
+            uri={song.uri}
+            style={styles.songContainer}
+            enableEmptySections
+          >
             <ListItem
               leftAvatar={{
                 source: {
