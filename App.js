@@ -33,17 +33,18 @@ class HomeScreen extends React.Component {
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
-    this.previous = this.previous.bind(this);
     this.next = this.next.bind(this);
+    this.rewind = this.rewind.bind(this);
   }
   play() {
     TrackPlayer.play();
     TrackPlayer.getState()
       .then((state) => this.setState({
         currentState: state,
+        position: 0,
       }))
   }
-  
+
   pause() {
     TrackPlayer.pause();
     TrackPlayer.getState()
@@ -51,24 +52,46 @@ class HomeScreen extends React.Component {
         currentState: state,
       }))
   }
-
-  previous() {
-    TrackPlayer.skipToPrevious();
-  }
-
   next() {
     TrackPlayer.skipToNext();
+    TrackPlayer.getState()
+      .then((state) => this.setState({
+        currentState: state,
+      }))
   }
-  
+
+  rewind() {
+    TrackPlayer.getPosition()
+      .then((pos) => this.setState({
+        position: pos,
+      }))
+      .then(() => {
+        let { position } = this.state;
+        if (position < 10) {
+          TrackPlayer.seekTo(0);
+          this.setState({
+            position: 0,
+          })
+        } else {
+          TrackPlayer.seekTo(position - 10);
+          this.setState({
+            position: position - 10,
+          })
+        }
+      })
+  }
+
   render() {
     const { currentState } = this.state;
 
     return (
       <View style={styles.appContainer}>
-        <Playlist />
-        <View style={styles.container}>
-          <MediaCtrls state={currentState} play={this.play} pause={this.pause} previous={this.previous} next={this.next} />
-        </View>  
+        <View>
+          <Playlist />
+        </View>
+        <View style={styles.mediaContainer}>
+          <MediaCtrls state={currentState} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} />
+        </View>
       </View>
     );
   }
@@ -91,7 +114,7 @@ class ChatScreen extends React.Component {
 
   onSubmitEdit = () => this.setState({ name: this.state.text });
 
-  render(){
+  render() {
     if (this.state.name === '') {
       return (
         <View style={styles.chatLogin}>
@@ -161,22 +184,22 @@ export default createAppContainer(
 
 const styles = StyleSheet.create({
   appContainer: {
-    flex: 1,
-    // backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    // justifyContent: 'center',
-    top: 30,
-    margin: 10
+    flexDirection: 'column',
+    top: 35,
+  },
+  mediaContainer: {
+    top: '107.1%',
+    shadowColor: "#000000",
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    shadowOffset: {
+      height: 1,
+      width: 1
+    },
   },
   chatLogin: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center'
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  }
 });
