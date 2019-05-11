@@ -10,7 +10,6 @@ class MediaCtrls extends React.Component {
   }
 
   onSwipeRight(gestureState) {
-    console.log('YOU SWIPED RIGHT');
     this.props.next();
   }
 
@@ -19,9 +18,7 @@ class MediaCtrls extends React.Component {
 
     if (state === 'playing') {
       return (
-        <GestureRecognizer
-          onSwipeRight={(state) => this.onSwipeRight(state)}
-        >
+        <GestureRecognizer onSwipeRight={(state) => this.onSwipeRight(state)}>
           <Image style={styles.image} source={{ uri: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg' }} />
           <Text style={styles.songTitle} >
             BLAHBLAHBLAH
@@ -39,9 +36,7 @@ class MediaCtrls extends React.Component {
     } else {
       return (
         <View>
-          <GestureRecognizer
-            onSwipeRight={(state) => this.onSwipeRight(state)}
-          >
+          <GestureRecognizer onSwipeRight={(state) => this.onSwipeRight(state)}>
             <Image style={styles.image} source={{ uri: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg' }} />
             <Text style={styles.songTitle} >
               BLAHBLAHBLAH
