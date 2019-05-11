@@ -13,6 +13,9 @@ let addItem = (item, title, artwork) => {
     artwork: artwork
   });
 };
+// let addItem = (item, title, artwork) => {
+//   db.ref('/songs').child(title).set()
+// }
 
 class Search extends React.Component {
   constructor(props) {

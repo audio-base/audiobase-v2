@@ -18,10 +18,11 @@ import Chatbox from './components/Chat/Chatbox.js';
 TrackPlayer.setupPlayer().then(async () => {
   await TrackPlayer.add({
     id: '496702374',
-    url: 'https://api.soundcloud.com/tracks/255766429/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
+    url:
+      'https://api.soundcloud.com/tracks/255766429/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
     title: 'Street Lights - Kanye West',
     artist: 'null',
-    artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
+    artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg'
   });
 });
 
@@ -29,7 +30,7 @@ class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentState: 'idle',
+      currentState: 'idle'
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
@@ -38,18 +39,20 @@ class HomeScreen extends React.Component {
   }
   play() {
     TrackPlayer.play();
-    TrackPlayer.getState()
-      .then((state) => this.setState({
-        currentState: state,
-      }))
+    TrackPlayer.getState().then(state =>
+      this.setState({
+        currentState: state
+      })
+    );
   }
-  
+
   pause() {
     TrackPlayer.pause();
-    TrackPlayer.getState()
-      .then((state) => this.setState({
-        currentState: state,
-      }))
+    TrackPlayer.getState().then(state =>
+      this.setState({
+        currentState: state
+      })
+    );
   }
 
   previous() {
@@ -59,7 +62,7 @@ class HomeScreen extends React.Component {
   next() {
     TrackPlayer.skipToNext();
   }
-  
+
   render() {
     const { currentState } = this.state;
 
@@ -67,8 +70,14 @@ class HomeScreen extends React.Component {
       <View style={styles.appContainer}>
         <Playlist />
         <View style={styles.container}>
-          <MediaCtrls state={currentState} play={this.play} pause={this.pause} previous={this.previous} next={this.next} />
-        </View>  
+          <MediaCtrls
+            state={currentState}
+            play={this.play}
+            pause={this.pause}
+            previous={this.previous}
+            next={this.next}
+          />
+        </View>
       </View>
     );
   }
@@ -91,7 +100,7 @@ class ChatScreen extends React.Component {
 
   onSubmitEdit = () => this.setState({ name: this.state.text });
 
-  render(){
+  render() {
     if (this.state.name === '') {
       return (
         <View style={styles.chatLogin}>
@@ -147,7 +156,7 @@ export default createAppContainer(
       }
     },
     {
-      initialRouteName: 'Search',
+      initialRouteName: 'Home',
       order: ['Home', 'Search', 'Chat'],
       // defaultNavigationOptions: {
       //   headerStyle: {
@@ -165,6 +174,7 @@ const styles = StyleSheet.create({
     // backgroundColor: '#fff',
     alignItems: 'flex-start',
     // justifyContent: 'center',
+    // width: 350,
     top: 30,
     margin: 10
   },
@@ -177,6 +187,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#F5FCFF'
   }
 });
