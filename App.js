@@ -14,11 +14,19 @@ import Playlist from './components/Playlist.js';
 import TrackPlayer from 'react-native-track-player';
 import MediaCtrls from './components/mediactrls.js';
 import Chatbox from './components/Chat/Chatbox.js';
+console.disableYellowBox = true;
 
 TrackPlayer.setupPlayer().then(async () => {
   await TrackPlayer.add({
     id: '496702374',
     url: 'https://api.soundcloud.com/tracks/255766429/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
+    title: 'Street Lights - Kanye West',
+    artist: 'null',
+    artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
+  })
+  await TrackPlayer.add({
+    id: '496702374',
+    url: 'https://api.soundcloud.com/tracks/11591831/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
     title: 'Street Lights - Kanye West',
     artist: 'null',
     artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
@@ -36,6 +44,7 @@ class HomeScreen extends React.Component {
     this.next = this.next.bind(this);
     this.rewind = this.rewind.bind(this);
   }
+
   play() {
     TrackPlayer.play();
     TrackPlayer.getState()
@@ -52,11 +61,11 @@ class HomeScreen extends React.Component {
         currentState: state,
       }))
   }
+
   next() {
-    TrackPlayer.skipToNext();
-    TrackPlayer.getState()
-      .then((state) => this.setState({
-        currentState: state,
+    TrackPlayer.skipToNext()
+      .then(() => this.setState({
+        currentState: 'playing',
       }))
   }
 
@@ -85,12 +94,16 @@ class HomeScreen extends React.Component {
     const { currentState } = this.state;
 
     return (
-      <View style={styles.appContainer}>
-        <View>
-          <Playlist />
+      <View style={styles.homeScreenContainer}>
+        <View style={styles.playlistContainer}>
+          <View>
+            <Playlist />
+          </View>
         </View>
         <View style={styles.mediaContainer}>
-          <MediaCtrls state={currentState} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} />
+          <View style={styles.mediaCtrls}>
+            <MediaCtrls state={currentState} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} />
+          </View>
         </View>
       </View>
     );
@@ -184,11 +197,29 @@ export default createAppContainer(
 
 const styles = StyleSheet.create({
   appContainer: {
-    flexDirection: 'column',
+    flex: 1,
+    alignItems: 'flex-start',
+    top: 30,
+    margin: 10
+  },
+  homeScreenContainer: {
+    display: 'flex',
+    flex: 6,
+  },
+  playlistContainer: {
+    position: 'absolute',
+    display: 'flex',
+    flex: 5,
     top: 35,
+    width: '100%',
   },
   mediaContainer: {
-    top: '107.1%',
+    position: 'absolute',
+    display: 'flex',
+    flex: 1,
+    bottom: 0,
+  },
+  mediaCtrls: {
     shadowColor: "#000000",
     shadowOpacity: 0.6,
     shadowRadius: 4,
