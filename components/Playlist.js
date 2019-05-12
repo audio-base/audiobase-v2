@@ -10,39 +10,9 @@ import { List, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { db } from '../config.js';
 import SortableListView from 'react-native-sortable-listview';
-// import Utils from './Utils.js';
 
 let songsRef = db.ref('/songs'); //grab songs from the key songs in db
-
-// function moveOrderItem(listView, fromIndex, toIndex) {
-//   Utils.move(dataListOrder, parseInt(fromIndex), parseInt(toIndex));
-//   if (listView.forceUpdate) listView.forceUpdate();
-// }
-// function getOrder(list) {
-//   return Object.keys(list);
-// }
-let data = {
-  hello: { text: 'world' },
-  how: { text: 'are you' },
-  test: { text: 123 },
-  this: { text: 'is' },
-  a: { text: 'a' },
-  real: { text: 'real' },
-  drag: { text: 'drag and drop' },
-  bb: { text: 'bb' },
-  cc: { text: 'cc' },
-  dd: { text: 'dd' },
-  ee: { text: 'ee' },
-  ff: { text: 'ff' },
-  gg: { text: 'gg' },
-  hh: { text: 'hh' },
-  ii: { text: 'ii' },
-  jj: { text: 'jj' },
-  kk: { text: 'kk' }
-};
-let songData = {};
-
-// let order = Object.keys(data);
+let querySort = songsRef.orderByChild('order');
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -52,26 +22,54 @@ class Playlist extends React.Component {
       songOrder: []
     };
     this.updateState = this.updateState.bind(this);
-    this.fetch = this.fetch.bind(this);
+    // this.fetch = this.fetch.bind(this);
+    this.fetchSort = this.fetchSort.bind(this);
   }
   componentDidMount() {
-    this.fetch();
+    this.fetchSort();
   }
 
-  handleRemove(id) {
-    return songsRef.child(id).remove();
-  }
-  fetch() {
-    songsRef.on('value', snapshot => {
+  // fetch() {
+  //   querySort.on('value', snapshot => {
+  //     let data = snapshot.val();
+  //     let songs = data ? Object.values(data) : [];
+  //     // let i = 0;
+  //     let previousOrder = 0;
+  //     for (let key in data) {
+  //       if (!data[key].hasOwnProperty('order')) {
+  //         songs[previousOrder + 1].order = previousOrder + 1;
+  //       } else {
+  //         songs[data[key].order] = data[key].order;
+  //       }
+  //       // songs[data[key].order].id = key;
+  //       previousOrder = data[key].order;
+  //       // i++;
+  //     }
+  //     let songData = {};
+  //     songs.forEach((song, i) => (songData[i] = song));
+  //     this.setState(
+  //       {
+  //         songs: songData,
+  //         songOrder: Object.keys(songs)
+  //       },
+  //       () => console.log(this.state)
+  //     );
+  //     // songData = songs;
+  //     // console.log(this.state.songs);
+  //   });
+  // }
+  fetchSort() {
+    querySort.on('value', snapshot => {
       let data = snapshot.val();
       let songs = data ? Object.values(data) : [];
+      let songData = {};
       let i = 0;
+      console.log(songs);
       for (let key in data) {
-        songs[i].id = key;
-        songs[i].order = i;
+        songs[i].key = key;
+        songs[i].order = data[key].order;
         i++;
       }
-      let songData = {};
       songs.forEach((song, i) => (songData[i] = song));
       this.setState(
         {
@@ -80,14 +78,68 @@ class Playlist extends React.Component {
         },
         () => console.log(this.state)
       );
-      // songData = songs;
-      // console.log(this.state.songs);
     });
   }
-  updateState(newOrder) {
-    this.setState({
-      songs: newOrder
+
+  // fetch() {
+  //   let songData = {};
+  //   let songOrder = [];
+  //   querySort.on('value', snapshot => {
+  //     snapshot.forEach((childSnapshot, i) => {
+  //       let childKey = childSnapshot.key;
+  //       let data = childSnapshot.val();
+  //       let songs = data ? Object.values(data) : [];
+  //       console.log(songs);
+  //       songs[i].order = data[key].order;
+  //       songs[i].id = childKey;
+  //     })
+  //     songs.forEach((song, i) => (songData[i] = song));
+  //     this.setState(
+  //       {
+  //         songs: songData,
+  //         songOrder: Object.keys(songs)
+  //       },
+  //       () => console.log(this.state)
+  //     );
+  //   });
+  // }
+
+  handleRemove(key) {
+    return songsRef.child(key).remove();
+  }
+
+  updateState(order, data) {
+    let i = 0;
+    for (let key in data) {
+      let update = {};
+      //compare current order and change the data.order to that number and update the database
+      if (data[key].order !== order[i]) {
+        data[key].order = order[i];
+        update['/order'] = parseInt(order[i]); //change to number so i can get a sorted array on fetch
+        songsRef.child(data[key].key).update(update);
+      }
+      i++;
+    }
+    console.log(songsRef.orderByChild('order'));
+    let songData2 = {};
+    let songOrder2 = [];
+    songsRef.orderByChild('order').on('value', snapshot => {
+      console.log(snapshot);
+      snapshot.forEach(function(childSnapshot) {
+        var childKey = childSnapshot.key;
+        var childData = childSnapshot.val();
+        // console.log(childKey);
+        songData2[childData.order] = childData;
+        songOrder2.push(childData.order);
+        // console.log(childData);
+      });
+      this.setState({
+        songs: songData2,
+        songOrder: songOrder2
+      });
     });
+    // // return data;
+    // this.fetchSort();
   }
 
   renderItem(song, order) {
@@ -103,7 +155,7 @@ class Playlist extends React.Component {
         // }}
         // style={styles.songContainer}
         // {...data.sortHandlers}
-        onPress={() => console.log(order)}
+        onPress={() => console.log(this.state.songOrder)}
       >
         <View
           // style={styles.songContainer}
@@ -125,7 +177,7 @@ class Playlist extends React.Component {
                 type="material"
                 color="#C8C8C8"
                 name="md-close"
-                onPress={() => this.handleRemove(song.id)}
+                onPress={() => this.handleRemove(song.key)}
               />
             }
           />
@@ -154,7 +206,12 @@ class Playlist extends React.Component {
             {
               songOrder: order
             },
-            () => console.log(this.state.songs)
+            () => {
+              return (
+                this.updateState(this.state.songOrder, this.state.songs),
+                console.log(this.state)
+              );
+            }
           );
         }}
         renderRow={(row, order) => this.renderItem(row, order)} //passes individual item in the list to renderItem
