@@ -299,6 +299,8 @@ const MainApp = createMaterialBottomTabNavigator(
           <Icon name="md-chatboxes" color={tintColor} size={24} />
         )
       }
+    }
+  },
     {
       initialRouteName: 'Search',
       order: ['Home', 'Search', 'Chat'],
@@ -309,17 +311,6 @@ const MainApp = createMaterialBottomTabNavigator(
       // },
       barStyle: { backgroundColor: '#694fad' }
     }
-  },
-  {
-    initialRouteName: 'Home',
-    order: ['Home', 'Search', 'Chat'],
-    // defaultNavigationOptions: {
-    //   headerStyle: {
-    //     backgroundColor: '#fff'
-    //   }
-    // },
-    barStyle: { backgroundColor: '#694fad' }
-  }
 )
 
 const RootStack = createStackNavigator(
