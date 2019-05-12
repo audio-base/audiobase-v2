@@ -6,22 +6,23 @@ class MediaCtrls extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.onSwipeRight = this.onSwipeRight.bind(this);
+    this.onSwipeLeft = this.onSwipeLeft.bind(this);
   }
 
-  onSwipeRight(gestureState) {
+  onSwipeLeft(gestureState) {
     this.props.next();
+    this.props.queue();
   }
 
   render() {
-    const { play, pause, rewind, state } = this.props;
+    const { play, pause, rewind, state, currentSong } = this.props;
 
     if (state === 'playing') {
       return (
-        <GestureRecognizer onSwipeRight={(state) => this.onSwipeRight(state)}>
-          <Image style={styles.image} source={{ uri: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg' }} />
+        <GestureRecognizer onSwipeLeft={(state) => this.onSwipeLeft(state)}>
+          <Image style={styles.image} source={{ uri: `${currentSong.artwork}` }} />
           <Text style={styles.songTitle} >
-            BLAHBLAHBLAH
+            {currentSong.title}
             </Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity activeOpacity={0.0} onPress={rewind}>
@@ -36,10 +37,10 @@ class MediaCtrls extends React.Component {
     } else {
       return (
         <View>
-          <GestureRecognizer onSwipeRight={(state) => this.onSwipeRight(state)}>
-            <Image style={styles.image} source={{ uri: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg' }} />
+          <GestureRecognizer onSwipeLeft={(state) => this.onSwipeLeft(state)}>
+            <Image style={styles.image} source={{ uri: `${currentSong.artwork}` }} />
             <Text style={styles.songTitle} >
-              BLAHBLAHBLAH
+              {currentSong.title}
             </Text>
             <View style={styles.buttonContainer}>
               <TouchableOpacity activeOpacity={0.0} onPress={rewind}>

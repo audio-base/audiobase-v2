@@ -17,26 +17,7 @@ import Chatbox from './components/Chat/Chatbox.js';
 import { db } from './config.js';
 console.disableYellowBox = true;
 
-
-// TrackPlayer.setupPlayer().then(async () => {
-//   await TrackPlayer.add({
-//     id: '496702374',
-//     url: 'https://api.soundcloud.com/tracks/255766429/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
-//     title: 'Street Lights - Kanye West',
-//     artist: 'null',
-//     artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
-//   })
-//   await TrackPlayer.add({
-//     id: '496702374',
-//     url: 'https://api.soundcloud.com/tracks/11591831/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
-//     title: 'Street Lights - Kanye West',
-//     artist: 'null',
-//     artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
-//   });
-// });
-
 let songsRef = db.ref('/songs');
-
 
 class HomeScreen extends React.Component {
   constructor(props) {
@@ -44,19 +25,37 @@ class HomeScreen extends React.Component {
     this.state = {
       currentState: 'idle',
       songs: [],
+      currentSong: {},
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
     this.next = this.next.bind(this);
     this.rewind = this.rewind.bind(this);
+    this.queue = this.queue.bind(this);
   }
 
   componentDidMount() {
+    this.fetchSongsAndSetupPlayer();
+  }
+
+  fetchSongsAndSetupPlayer() {
     songsRef.once('value', snapshot => {
       let data = snapshot.val();
       let songs = Object.values(data);
-      this.setState({ songs });
-      // console.log(this.state.songs, 'FROM FETCH')
+      // console.log(data, 'THIS IS MY DATA');
+      let i = 0;
+      for (let id in data) {
+        songs[i].uniqueId = id;
+        i++;
+      }
+
+      // console.log(songs, 'MY SONGSSSS');
+      this.setState({
+        songs: songs,
+        currentSong: songs[0],
+      });
+      console.log(this.state.currentSong.uniqueId, 'THIS IS THE UNIQUE ID')
+      // console.log(this.state, 'FROM FETCH')
     })
       .then(() => {
         TrackPlayer.setupPlayer()
@@ -90,7 +89,14 @@ class HomeScreen extends React.Component {
     TrackPlayer.skipToNext()
       .then(() => this.setState({
         currentState: 'playing',
-      }))
+      }));
+    this.removeFromDB();
+    this.fetchSongsAndSetupPlayer();
+  }
+
+  removeFromDB() {
+    const { currentSong } = this.state;
+    return songsRef.child(currentSong.uniqueId).remove();
   }
 
   rewind() {
@@ -114,8 +120,19 @@ class HomeScreen extends React.Component {
       })
   }
 
+  queue() {
+    TrackPlayer.getQueue()
+      .then((data) => {
+        console.log(data, 'current player queue');
+      });
+    TrackPlayer.getCurrentTrack()
+      .then((data) => {
+        console.log(data, 'current track')
+      });
+  }
+
   render() {
-    const { currentState } = this.state;
+    const { currentState, currentSong } = this.state;
 
     return (
       <View style={styles.homeScreenContainer} >
@@ -126,7 +143,7 @@ class HomeScreen extends React.Component {
         </View>
         <View style={styles.mediaContainer}>
           <View style={styles.mediaCtrls}>
-            <MediaCtrls state={currentState} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} />
+            <MediaCtrls state={currentState} currentSong={currentSong} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} queue={this.queue} />
           </View>
         </View>
       </View>
@@ -207,7 +224,7 @@ export default createAppContainer(
       }
     },
     {
-      initialRouteName: 'Home',
+      initialRouteName: 'Search',
       order: ['Home', 'Search', 'Chat'],
       // defaultNavigationOptions: {
       //   headerStyle: {
