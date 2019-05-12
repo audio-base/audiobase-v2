@@ -90,11 +90,11 @@ class Playlist extends React.Component {
         let childKey = childSnapshot.key;
         let data = childKey ? childSnapshot.val() : [];
         // let songs = data ? Object.values(data) : [];
-        data.order = data.order ? data.order : i;
+        // data.order = data.order ? data.order : '';
         data.uniqueId = childKey;
-        // console.log(i);
+        // console.log(data);
         songData[i] = data;
-        songOrder.push(data.order);
+        songOrder.push(i);
         i++;
       });
       // songs.forEach((song, i) => (songData[i] = song));
@@ -102,8 +102,8 @@ class Playlist extends React.Component {
         {
           songs: songData,
           songOrder: songOrder
-        }
-        // () => console.log(this.state)
+        },
+        () => console.log(this.state)
       );
     });
   }
@@ -124,7 +124,7 @@ class Playlist extends React.Component {
       }
       i++;
     }
-    console.log(songsRef.orderByChild('order'));
+    // console.log(songsRef.orderByChild('order'));
     // let songData2 = {};
     // let songOrder2 = [];
     // songsRef.orderByChild('order').on('value', snapshot => {
@@ -162,10 +162,10 @@ class Playlist extends React.Component {
         onPress={() => console.log(this.state.songOrder)}
       >
         <View
-          // style={styles.songContainer}
-          uri={song.uri}
+        // style={styles.songContainer}
+        // uri={song.uri}
 
-          // enableEmptySections
+        // enableEmptySections
         >
           <ListItem
             // style={styles.songContainer}
