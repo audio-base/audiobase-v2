@@ -90,9 +90,9 @@ class Playlist extends React.Component {
         let childKey = childSnapshot.key;
         let data = childKey ? childSnapshot.val() : [];
         // let songs = data ? Object.values(data) : [];
-        // data.order = data.order ? data.order : '';
+        // data.order = data.order ? data.order : i;
         data.uniqueId = childKey;
-        // console.log(data);
+        console.log(data);
         songData[i] = data;
         songOrder.push(i);
         i++;
@@ -109,6 +109,7 @@ class Playlist extends React.Component {
   }
 
   handleRemove(uniqueId) {
+    console.log(uniqueId);
     return songsRef.child(uniqueId).remove();
   }
 
@@ -181,7 +182,7 @@ class Playlist extends React.Component {
                 type="material"
                 color="#C8C8C8"
                 name="md-close"
-                onPress={() => this.handleRemove(song.key)}
+                onPress={() => this.handleRemove(song.uniqueId)}
               />
             }
           />
