@@ -56,11 +56,11 @@ class Search extends React.Component {
   addSong(uri, title, artwork) {
     this.setState(
       {
-        uri: uri,
+        url: `${uri}/stream?client_id=${SC_KEY}`,
         title: title,
         artwork: artwork
       },
-      () => addItem(this.state.uri, this.state.title, this.state.artwork)
+      () => addItem(this.state.url, this.state.title, this.state.artwork)
     );
   }
   // renderItem(obj) {
