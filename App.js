@@ -105,19 +105,37 @@ class HomeScreen extends React.Component {
     this.state = {
       currentState: 'idle',
       songs: [],
+      currentSong: {},
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
     this.next = this.next.bind(this);
     this.rewind = this.rewind.bind(this);
+    this.queue = this.queue.bind(this);
   }
 
   componentDidMount() {
+    this.fetchSongsAndSetupPlayer();
+  }
+
+  fetchSongsAndSetupPlayer() {
     songsRef.once('value', snapshot => {
       let data = snapshot.val();
       let songs = Object.values(data);
-      this.setState({ songs });
-      // console.log(this.state.songs, 'FROM FETCH')
+      // console.log(data, 'THIS IS MY DATA');
+      let i = 0;
+      for (let id in data) {
+        songs[i].uniqueId = id;
+        i++;
+      }
+
+      // console.log(songs, 'MY SONGSSSS');
+      this.setState({
+        songs: songs,
+        currentSong: songs[0],
+      });
+      console.log(this.state.currentSong.uniqueId, 'THIS IS THE UNIQUE ID')
+      // console.log(this.state, 'FROM FETCH')
     })
       .then(() => {
         TrackPlayer.setupPlayer()
@@ -151,7 +169,14 @@ class HomeScreen extends React.Component {
     TrackPlayer.skipToNext()
       .then(() => this.setState({
         currentState: 'playing',
-      }))
+      }));
+    this.removeFromDB();
+    this.fetchSongsAndSetupPlayer();
+  }
+
+  removeFromDB() {
+    const { currentSong } = this.state;
+    return songsRef.child(currentSong.uniqueId).remove();
   }
 
   rewind() {
@@ -175,8 +200,19 @@ class HomeScreen extends React.Component {
       })
   }
 
+  queue() {
+    TrackPlayer.getQueue()
+      .then((data) => {
+        console.log(data, 'current player queue');
+      });
+    TrackPlayer.getCurrentTrack()
+      .then((data) => {
+        console.log(data, 'current track')
+      });
+  }
+
   render() {
-    const { currentState } = this.state;
+    const { currentState, currentSong } = this.state;
 
     return (
       <View style={styles.homeScreenContainer} >
@@ -187,7 +223,7 @@ class HomeScreen extends React.Component {
         </View>
         <View style={styles.mediaContainer}>
           <View style={styles.mediaCtrls}>
-            <MediaCtrls state={currentState} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} />
+            <MediaCtrls state={currentState} currentSong={currentSong} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} queue={this.queue} />
           </View>
         </View>
       </View>
@@ -263,6 +299,15 @@ const MainApp = createMaterialBottomTabNavigator(
           <Icon name="md-chatboxes" color={tintColor} size={24} />
         )
       }
+    {
+      initialRouteName: 'Search',
+      order: ['Home', 'Search', 'Chat'],
+      // defaultNavigationOptions: {
+      //   headerStyle: {
+      //     backgroundColor: '#fff'
+      //   }
+      // },
+      barStyle: { backgroundColor: '#694fad' }
     }
   },
   {
