@@ -14,35 +14,56 @@ import Playlist from './components/Playlist.js';
 import TrackPlayer from 'react-native-track-player';
 import MediaCtrls from './components/mediactrls.js';
 import Chatbox from './components/Chat/Chatbox.js';
+import { db } from './config.js';
 console.disableYellowBox = true;
 
-TrackPlayer.setupPlayer().then(async () => {
-  await TrackPlayer.add({
-    id: '496702374',
-    url: 'https://api.soundcloud.com/tracks/255766429/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
-    title: 'Street Lights - Kanye West',
-    artist: 'null',
-    artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
-  })
-  await TrackPlayer.add({
-    id: '496702374',
-    url: 'https://api.soundcloud.com/tracks/11591831/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
-    title: 'Street Lights - Kanye West',
-    artist: 'null',
-    artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
-  });
-});
+// TrackPlayer.setupPlayer().then(async () => {
+//   await TrackPlayer.add({
+//     id: '496702374',
+//     url: 'https://api.soundcloud.com/tracks/255766429/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
+//     title: 'Street Lights - Kanye West',
+//     artist: 'null',
+//     artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
+//   })
+//   await TrackPlayer.add({
+//     id: '496702374',
+//     url: 'https://api.soundcloud.com/tracks/11591831/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
+//     title: 'Street Lights - Kanye West',
+//     artist: 'null',
+//     artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
+//   });
+// });
+
+let songsRef = db.ref('/songs');
 
 class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       currentState: 'idle',
+      songs: [],
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
     this.next = this.next.bind(this);
     this.rewind = this.rewind.bind(this);
+  }
+
+  componentDidMount() {
+    songsRef.once('value', snapshot => {
+      let data = snapshot.val();
+      let songs = Object.values(data);
+      this.setState({ songs });
+      // console.log(this.state.songs, 'FROM FETCH')
+    })
+      .then(() => {
+        TrackPlayer.setupPlayer()
+          .then(async () => {
+            // console.log(this.state.songs, 'FROM SETUP')
+            await TrackPlayer.add(this.state.songs);
+          })
+          .catch(err => console.error(err));
+      })
   }
 
   play() {
@@ -94,7 +115,7 @@ class HomeScreen extends React.Component {
     const { currentState } = this.state;
 
     return (
-      <View style={styles.homeScreenContainer}>
+      <View style={styles.homeScreenContainer} >
         <View style={styles.playlistContainer}>
           <View>
             <Playlist />
