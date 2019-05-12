@@ -8,11 +8,16 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 let addItem = (item, title, artwork) => {
   db.ref('/songs').push({
-    uri: item,
+    artist: 'null',
+    url: item,
+    id: '0',
     title: title,
     artwork: artwork
   });
 };
+// let addItem = (item, title, artwork) => {
+//   db.ref('/songs').child(title).set()
+// }
 
 class Search extends React.Component {
   constructor(props) {

@@ -17,6 +17,7 @@ import Chatbox from './components/Chat/Chatbox.js';
 import { db } from './config.js';
 console.disableYellowBox = true;
 
+
 // TrackPlayer.setupPlayer().then(async () => {
 //   await TrackPlayer.add({
 //     id: '496702374',
@@ -35,6 +36,7 @@ console.disableYellowBox = true;
 // });
 
 let songsRef = db.ref('/songs');
+
 
 class HomeScreen extends React.Component {
   constructor(props) {
@@ -77,10 +79,11 @@ class HomeScreen extends React.Component {
 
   pause() {
     TrackPlayer.pause();
-    TrackPlayer.getState()
-      .then((state) => this.setState({
-        currentState: state,
-      }))
+    TrackPlayer.getState().then(state =>
+      this.setState({
+        currentState: state
+      })
+    );
   }
 
   next() {
@@ -204,7 +207,7 @@ export default createAppContainer(
       }
     },
     {
-      initialRouteName: 'Search',
+      initialRouteName: 'Home',
       order: ['Home', 'Search', 'Chat'],
       // defaultNavigationOptions: {
       //   headerStyle: {
