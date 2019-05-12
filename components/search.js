@@ -8,11 +8,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 let addItem = (item, title, artwork) => {
   db.ref('/songs').push({
-    artist: 'null',
     url: item,
-    id: '0',
     title: title,
-    artwork: artwork
+    artwork: artwork,
+    order: Math.floor(Math.random() * (2e4 - 1e4)) + 1e4,
+    artist: 'null',
+    id: '0'
   });
 };
 // let addItem = (item, title, artwork) => {
