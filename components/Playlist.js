@@ -23,10 +23,10 @@ class Playlist extends React.Component {
     };
     this.updateState = this.updateState.bind(this);
     // this.fetch = this.fetch.bind(this);
-    this.fetchSort = this.fetchSort.bind(this);
+    // this.fetchSort = this.fetchSort.bind(this);
   }
   componentDidMount() {
-    this.fetchSort();
+    this.fetch();
   }
 
   // fetch() {
@@ -58,41 +58,18 @@ class Playlist extends React.Component {
   //     // console.log(this.state.songs);
   //   });
   // }
-  fetchSort() {
-    querySort.on('value', snapshot => {
-      let data = snapshot.val();
-      let songs = data ? Object.values(data) : [];
-      let songData = {};
-      let i = 0;
-      console.log(songs);
-      for (let key in data) {
-        songs[i].key = key;
-        songs[i].order = data[key].order;
-        i++;
-      }
-      songs.forEach((song, i) => (songData[i] = song));
-      this.setState(
-        {
-          songs: songData,
-          songOrder: Object.keys(songs)
-        },
-        () => console.log(this.state)
-      );
-    });
-  }
-
-  // fetch() {
-  //   let songData = {};
-  //   let songOrder = [];
+  // fetchSort() {
   //   querySort.on('value', snapshot => {
-  //     snapshot.forEach((childSnapshot, i) => {
-  //       let childKey = childSnapshot.key;
-  //       let data = childSnapshot.val();
-  //       let songs = data ? Object.values(data) : [];
-  //       console.log(songs);
+  //     let data = snapshot.val();
+  //     let songs = data ? Object.values(data) : [];
+  //     let songData = {};
+  //     let i = 0;
+  //     console.log(songs);
+  //     for (let key in data) {
+  //       songs[i].key = key;
   //       songs[i].order = data[key].order;
-  //       songs[i].id = childKey;
-  //     })
+  //       i++;
+  //     }
   //     songs.forEach((song, i) => (songData[i] = song));
   //     this.setState(
   //       {
@@ -104,8 +81,35 @@ class Playlist extends React.Component {
   //   });
   // }
 
-  handleRemove(key) {
-    return songsRef.child(key).remove();
+  fetch() {
+    let songData = {};
+    querySort.on('value', snapshot => {
+      let i = 0;
+      let songOrder = [];
+      snapshot.forEach(childSnapshot => {
+        let childKey = childSnapshot.key;
+        let data = childKey ? childSnapshot.val() : [];
+        // let songs = data ? Object.values(data) : [];
+        data.order = data.order ? data.order : i;
+        data.uniqueId = childKey;
+        // console.log(i);
+        songData[i] = data;
+        songOrder.push(data.order);
+        i++;
+      });
+      // songs.forEach((song, i) => (songData[i] = song));
+      this.setState(
+        {
+          songs: songData,
+          songOrder: songOrder
+        }
+        // () => console.log(this.state)
+      );
+    });
+  }
+
+  handleRemove(uniqueId) {
+    return songsRef.child(uniqueId).remove();
   }
 
   updateState(order, data) {
@@ -116,28 +120,28 @@ class Playlist extends React.Component {
       if (data[key].order !== order[i]) {
         data[key].order = order[i];
         update['/order'] = parseInt(order[i]); //change to number so i can get a sorted array on fetch
-        songsRef.child(data[key].key).update(update);
+        songsRef.child(data[key].uniqueId).update(update);
       }
       i++;
     }
     console.log(songsRef.orderByChild('order'));
-    let songData2 = {};
-    let songOrder2 = [];
-    songsRef.orderByChild('order').on('value', snapshot => {
-      console.log(snapshot);
-      snapshot.forEach(function(childSnapshot) {
-        var childKey = childSnapshot.key;
-        var childData = childSnapshot.val();
-        // console.log(childKey);
-        songData2[childData.order] = childData;
-        songOrder2.push(childData.order);
-        // console.log(childData);
-      });
-      this.setState({
-        songs: songData2,
-        songOrder: songOrder2
-      });
-    });
+    // let songData2 = {};
+    // let songOrder2 = [];
+    // songsRef.orderByChild('order').on('value', snapshot => {
+    //   console.log(snapshot);
+    //   snapshot.forEach(function(childSnapshot) {
+    //     var childKey = childSnapshot.key;
+    //     var childData = childSnapshot.val();
+    //     // console.log(childKey);
+    //     songData2[childData.order] = childData;
+    //     songOrder2.push(childData.order);
+    //     // console.log(childData);
+    //   });
+    //   this.setState({
+    //     songs: songData2,
+    //     songOrder: songOrder2
+    //   });
+    // });
     // // return data;
     // this.fetchSort();
   }
