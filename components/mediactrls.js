@@ -23,7 +23,7 @@ class MediaCtrls extends React.Component {
           <Image style={styles.image} source={{ uri: `${currentSong.artwork}` }} />
           <Text style={styles.songTitle} >
             {currentSong.title}
-            </Text>
+          </Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity activeOpacity={0.0} onPress={rewind}>
               <Image style={{ width: 40, height: 40 }} source={require('../img/rewind-10-black.png')} />
@@ -42,16 +42,16 @@ class MediaCtrls extends React.Component {
             <Text style={styles.songTitle} >
               {currentSong.title}
             </Text>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity activeOpacity={0.0} onPress={rewind}>
-                <Image style={{ width: 40, height: 40 }} source={require('../img/rewind-10-black.png')} />
-              </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.0} onPress={play}>
-                <Image style={{ width: 40, height: 40 }} source={require('../img/play-black.png')} />
-              </TouchableOpacity>
-            </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity activeOpacity={0.0} onPress={rewind}>
+              <Image style={{ width: 40, height: 40 }} source={require('../img/rewind-10-black.png')} />
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.0} onPress={play}>
+              <Image style={{ width: 40, height: 40 }} source={require('../img/play-black.png')} />
+            </TouchableOpacity>
+          </View>
           </GestureRecognizer>
-        </View>
+        </View >
       )
     }
   }
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 72,
     fontSize: 17,
-  }
+  },
 });
 
 export default MediaCtrls;
