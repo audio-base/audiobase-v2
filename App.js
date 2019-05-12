@@ -7,7 +7,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, createStackNavigator } from 'react-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Search from './components/search.js';
 import Playlist from './components/Playlist.js';
@@ -17,6 +17,7 @@ import Chatbox from './components/Chat/Chatbox.js';
 import { db } from './config.js';
 console.disableYellowBox = true;
 
+let roomsRef = db.ref('/rooms/')
 
 // TrackPlayer.setupPlayer().then(async () => {
 //   await TrackPlayer.add({
@@ -37,6 +38,66 @@ console.disableYellowBox = true;
 
 let songsRef = db.ref('/songs');
 
+class RoomScreen extends React.Component {
+  state = {
+    roomName: '',
+    roomKey: ''
+  };
+
+  validateRoom(){
+    roomsRef.on('value', snapshot => {
+      var data = snapshot.val();
+      var fbRoomName = Object.keys(data)[0];
+      var fbRoomKey = data.hrla28.key;
+      var userRoom = this.state.roomName.toLowerCase();
+      var userKey = this.state.roomKey.toLowerCase();
+      if(userRoom == fbRoomName && userKey == fbRoomKey){
+        this.props.navigation.navigate('Main')
+      } else {
+        Alert.alert(
+          'Unauthorized',
+          'Invalid Audiobase or Key',
+          [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ],
+          {cancelable: false},
+        );
+      }
+    })
+  }
+
+  render() {
+    return (
+      <View style={styles.signIn}>
+        <View>
+          <Text style={styles.title}>Audiobase Name:</Text>
+          <TextInput
+            style={styles.nameInput}
+            textAlign="center"
+            autoCorrect={false}
+            onSubmitEditing={this.onSubmitEdit}
+            onChangeText={roomName => this.setState({ roomName })}
+          />
+        </View>
+        <Text style={styles.title}>Key:</Text>
+        <TextInput
+          style={styles.nameInput}
+          textAlign="center"
+          autoCorrect={false}
+          onSubmitEditing={this.onSubmitEdit}
+          onChangeText={roomKey => this.setState({ roomKey })}
+        />
+        <TouchableOpacity
+          buttonStyle={{ marginTop: 20 }}
+          style={styles.button}
+          onPress={() => this.validateRoom()}
+        >
+        <Text style={styles.buttonText}>Join audiobase</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+}
 
 class HomeScreen extends React.Component {
   constructor(props) {
@@ -174,52 +235,81 @@ class ChatScreen extends React.Component {
   }
 }
 
-export default createAppContainer(
-  createMaterialBottomTabNavigator(
-    {
-      Home: {
-        screen: HomeScreen,
-        navigationOptions: {
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ tintColor }) => (
-            <Icon name="ios-home" color={tintColor} size={24} />
-          )
-        }
-      },
-
-      Search: {
-        screen: SearchScreen,
-        navigationOptions: {
-          tabBarLabel: 'Search',
-          tabBarIcon: ({ tintColor }) => (
-            <Icon name="ios-search" color={tintColor} size={24} />
-          )
-        }
-      },
-      Chat: {
-        screen: ChatScreen,
-        navigationOptions: {
-          tabBarLabel: 'Chat',
-          tabBarIcon: ({ tintColor }) => (
-            <Icon name="md-chatboxes" color={tintColor} size={24} />
-          )
-        }
+const MainApp = createMaterialBottomTabNavigator(
+  {
+    Home: {
+      screen: HomeScreen,
+      navigationOptions: {
+        tabBarLabel: 'Home',
+        tabBarIcon: ({ tintColor }) => (
+          <Icon name="ios-home" color={tintColor} size={24} />
+        )
       }
     },
-    {
-      initialRouteName: 'Home',
-      order: ['Home', 'Search', 'Chat'],
-      // defaultNavigationOptions: {
-      //   headerStyle: {
-      //     backgroundColor: '#fff'
-      //   }
-      // },
-      barStyle: { backgroundColor: '#694fad' }
+    Search: {
+      screen: SearchScreen,
+      navigationOptions: {
+        tabBarLabel: 'Search',
+        tabBarIcon: ({ tintColor }) => (
+          <Icon name="ios-search" color={tintColor} size={24} />
+        )
+      }
+    },
+    Chat: {
+      screen: ChatScreen,
+      navigationOptions: {
+        tabBarLabel: 'Chat',
+        tabBarIcon: ({ tintColor }) => (
+          <Icon name="md-chatboxes" color={tintColor} size={24} />
+        )
+      }
     }
-  )
+  },
+  {
+    initialRouteName: 'Home',
+    order: ['Home', 'Search', 'Chat'],
+    // defaultNavigationOptions: {
+    //   headerStyle: {
+    //     backgroundColor: '#fff'
+    //   }
+    // },
+    barStyle: { backgroundColor: '#694fad' }
+  }
+)
+
+const RootStack = createStackNavigator(
+{
+  Main: {
+    screen: MainApp,
+  },
+  MyModal: {
+    screen: RoomScreen,
+  },
+},
+{
+  initialRouteName: 'MyModal',
+  mode: 'modal',
+  headerMode: 'none',
+}
 );
 
+// export default createAppContainer(MainApp)
+export default createAppContainer(RootStack)
+
 const styles = StyleSheet.create({
+  signIn: {
+    paddingVertical: 20,
+    flex: 2,
+    justifyContent: 'center'
+  },
+  button: {
+    backgroundColor: '#694fad',
+    padding: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white'
+  },
   appContainer: {
     flex: 1,
     alignItems: 'flex-start',
