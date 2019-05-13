@@ -82,7 +82,7 @@ class Playlist extends React.Component {
   // }
 
   fetch() {
-    let songData = {};
+    let songData = { 0: [] };
     querySort.on('value', snapshot => {
       let i = 0;
       let songOrder = [];
@@ -92,7 +92,7 @@ class Playlist extends React.Component {
         // let songs = data ? Object.values(data) : [];
         // data.order = data.order ? data.order : i;
         data.uniqueId = childKey;
-        console.log(data);
+        console.log(data.order);
         songData[i] = data;
         songOrder.push(i);
         i++;
@@ -144,7 +144,7 @@ class Playlist extends React.Component {
     //   });
     // });
     // // return data;
-    this.fetch();
+    // this.fetch();
   }
 
   renderItem(song, order) {
@@ -178,6 +178,7 @@ class Playlist extends React.Component {
             title={song.title}
             rightElement={
               <Icon
+                size={30}
                 containerStyle={{ alignSelf: 'flex-start' }}
                 type="material"
                 color="#C8C8C8"
@@ -228,7 +229,7 @@ class Playlist extends React.Component {
 
 const styles = StyleSheet.create({
   playlistContainer: {
-    width: 353
+    width: '100%'
   },
   songContainer: {
     // flex: 1,

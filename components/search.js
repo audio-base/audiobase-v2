@@ -122,6 +122,7 @@ class Search extends React.Component {
                 title={obj.title}
                 rightElement={
                   <Icon
+                    size={30}
                     containerStyle={{ alignSelf: 'flex-start' }}
                     type="material"
                     color="#C8C8C8"
