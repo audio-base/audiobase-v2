@@ -215,6 +215,7 @@ class Playlist extends React.Component {
             () => {
               return (
                 this.updateState(this.state.songOrder, this.state.songs),
+                this.props.fetchSongsAndSetupPlayer(),
                 console.log(this.state)
               );
             }
