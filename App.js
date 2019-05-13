@@ -245,6 +245,7 @@ const MainApp = createMaterialBottomTabNavigator(
     Home: {
       screen: HomeScreen,
       navigationOptions: {
+        gesturesEnabled: false,
         tabBarLabel: 'Home',
         tabBarIcon: ({ tintColor }) => (
           <Icon name="ios-home" color={tintColor} size={24} />
@@ -254,6 +255,7 @@ const MainApp = createMaterialBottomTabNavigator(
     Search: {
       screen: SearchScreen,
       navigationOptions: {
+        gesturesEnabled: false,
         tabBarLabel: 'Search',
         tabBarIcon: ({ tintColor }) => (
           <Icon name="ios-search" color={tintColor} size={24} />
@@ -263,6 +265,7 @@ const MainApp = createMaterialBottomTabNavigator(
     Chat: {
       screen: ChatScreen,
       navigationOptions: {
+        gesturesEnabled: false,
         tabBarLabel: 'Chat',
         tabBarIcon: ({ tintColor }) => (
           <Icon name="md-chatboxes" color={tintColor} size={24} />
@@ -285,7 +288,10 @@ const MainApp = createMaterialBottomTabNavigator(
 const RootStack = createStackNavigator(
   {
     Main: {
-      screen: MainApp
+      screen: MainApp,
+      navigationOptions: {
+        gesturesEnabled: false,
+      }
     },
     MyModal: {
       screen: RoomScreen
