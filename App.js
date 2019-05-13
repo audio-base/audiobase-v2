@@ -5,7 +5,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  Alert
+  Alert,
 } from 'react-native';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -19,6 +19,7 @@ import { db } from './config.js';
 console.disableYellowBox = true;
 
 let roomsRef = db.ref('/rooms/');
+
 let songsRef = db.ref('/songs');
 
 class RoomScreen extends React.Component {
@@ -90,7 +91,7 @@ class HomeScreen extends React.Component {
     this.pause = this.pause.bind(this);
     this.next = this.next.bind(this);
     this.rewind = this.rewind.bind(this);
-    this.queue = this.queue.bind(this);
+    this.fetchSongsAndSetupPlayer = this.fetchSongsAndSetupPlayer.bind(this);
   }
 
   componentDidMount() {
@@ -98,29 +99,22 @@ class HomeScreen extends React.Component {
   }
 
   fetchSongsAndSetupPlayer() {
-    songsRef
-      .once('value', snapshot => {
-        let data = snapshot.val();
-        let songs = Object.values(data);
-        // console.log(data, 'THIS IS MY DATA');
-        let i = 0;
-        for (let id in data) {
-          songs[i].uniqueId = id;
-          i++;
-        }
-
-        // console.log(songs, 'MY SONGSSSS');
-        this.setState({
-          songs: songs,
-          currentSong: songs[0]
-        });
-        console.log(this.state.currentSong.uniqueId, 'THIS IS THE UNIQUE ID');
-        // console.log(this.state, 'FROM FETCH')
-      })
+    songsRef.once('value', snapshot => {
+      let data = snapshot.val();
+      let songs = Object.values(data);
+      let i = 0;
+      for (let id in data) {
+        songs[i].uniqueId = id;
+        i++;
+      }
+      this.setState({
+        songs: songs,
+        currentSong: songs[0],
+      });
+    })
       .then(() => {
         TrackPlayer.setupPlayer()
           .then(async () => {
-            // console.log(this.state.songs, 'FROM SETUP')
             await TrackPlayer.add(this.state.songs);
           })
           .catch(err => console.error(err));
@@ -184,15 +178,6 @@ class HomeScreen extends React.Component {
       });
   }
 
-  queue() {
-    TrackPlayer.getQueue().then(data => {
-      console.log(data, 'current player queue');
-    });
-    TrackPlayer.getCurrentTrack().then(data => {
-      console.log(data, 'current track');
-    });
-  }
-
   render() {
     const { currentState, currentSong } = this.state;
 
@@ -205,16 +190,7 @@ class HomeScreen extends React.Component {
         </View>
         <View style={styles.mediaContainer}>
           <View style={styles.mediaCtrls}>
-            <MediaCtrls
-              state={currentState}
-              currentSong={currentSong}
-              play={this.play}
-              pause={this.pause}
-              previous={this.previous}
-              next={this.next}
-              rewind={this.rewind}
-              queue={this.queue}
-            />
+            <MediaCtrls state={currentState} currentSong={currentSong} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} />
           </View>
         </View>
       </View>
@@ -318,7 +294,7 @@ const RootStack = createStackNavigator(
   {
     initialRouteName: 'MyModal',
     mode: 'modal',
-    headerMode: 'none'
+    headerMode: 'none',
   }
 );
 
