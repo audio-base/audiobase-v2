@@ -85,17 +85,29 @@ class HomeScreen extends React.Component {
     this.state = {
       currentState: 'idle',
       songs: [],
-      currentSong: {}
+      currentSong: {},
+      isSorted: false,
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
     this.next = this.next.bind(this);
     this.rewind = this.rewind.bind(this);
     this.fetchSongsAndSetupPlayer = this.fetchSongsAndSetupPlayer.bind(this);
+    this.handleSorted = this.handleSorted.bind(this);
   }
 
   componentDidMount() {
     this.fetchSongsAndSetupPlayer();
+  }
+
+  handleSorted() {
+    // this.setState({
+    //   isSorted: true,
+    // })
+    // setTimeout(
+    //   this.setState({
+    //     isSorted: false,
+    //   }), 300)
   }
 
   fetchSongsAndSetupPlayer() {
@@ -179,13 +191,13 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    const { currentState, currentSong } = this.state;
+    const { currentState, currentSong, isSorted} = this.state;
 
     return (
       <View style={styles.homeScreenContainer}>
         <View style={styles.playlistContainer}>
           <View>
-            <Playlist />
+            <Playlist mediaFetch={this.fetchSongsAndSetupPlayer} />
           </View>
         </View>
         <View style={styles.mediaContainer}>
