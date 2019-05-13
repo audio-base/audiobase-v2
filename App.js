@@ -4,7 +4,8 @@ import {
   Text,
   TextInput,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -17,7 +18,7 @@ import Chatbox from './components/Chat/Chatbox.js';
 import { db } from './config.js';
 console.disableYellowBox = true;
 
-let roomsRef = db.ref('/rooms/')
+let roomsRef = db.ref('/rooms/');
 
 // TrackPlayer.setupPlayer().then(async () => {
 //   await TrackPlayer.add({
@@ -44,26 +45,24 @@ class RoomScreen extends React.Component {
     roomKey: ''
   };
 
-  validateRoom(){
+  validateRoom() {
     roomsRef.on('value', snapshot => {
       var data = snapshot.val();
       var fbRoomName = Object.keys(data)[0];
       var fbRoomKey = data.hrla28.key;
       var userRoom = this.state.roomName.toLowerCase();
       var userKey = this.state.roomKey.toLowerCase();
-      if(userRoom == fbRoomName && userKey == fbRoomKey){
-        this.props.navigation.navigate('Main')
+      if (userRoom == fbRoomName && userKey == fbRoomKey) {
+        this.props.navigation.navigate('Main');
       } else {
         Alert.alert(
           'Unauthorized',
           'Invalid Audiobase or Key',
-          [
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
-          ],
-          {cancelable: false},
+          [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+          { cancelable: false }
         );
       }
-    })
+    });
   }
 
   render() {
@@ -92,7 +91,7 @@ class RoomScreen extends React.Component {
           style={styles.button}
           onPress={() => this.validateRoom()}
         >
-        <Text style={styles.buttonText}>Join audiobase</Text>
+          <Text style={styles.buttonText}>Join audiobase</Text>
         </TouchableOpacity>
       </View>
     );
@@ -105,7 +104,7 @@ class HomeScreen extends React.Component {
     this.state = {
       currentState: 'idle',
       songs: [],
-      currentSong: {},
+      currentSong: {}
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
@@ -119,24 +118,25 @@ class HomeScreen extends React.Component {
   }
 
   fetchSongsAndSetupPlayer() {
-    songsRef.once('value', snapshot => {
-      let data = snapshot.val();
-      let songs = Object.values(data);
-      // console.log(data, 'THIS IS MY DATA');
-      let i = 0;
-      for (let id in data) {
-        songs[i].uniqueId = id;
-        i++;
-      }
+    songsRef
+      .once('value', snapshot => {
+        let data = snapshot.val();
+        let songs = Object.values(data);
+        // console.log(data, 'THIS IS MY DATA');
+        let i = 0;
+        for (let id in data) {
+          songs[i].uniqueId = id;
+          i++;
+        }
 
-      // console.log(songs, 'MY SONGSSSS');
-      this.setState({
-        songs: songs,
-        currentSong: songs[0],
-      });
-      console.log(this.state.currentSong.uniqueId, 'THIS IS THE UNIQUE ID')
-      // console.log(this.state, 'FROM FETCH')
-    })
+        // console.log(songs, 'MY SONGSSSS');
+        this.setState({
+          songs: songs,
+          currentSong: songs[0]
+        });
+        console.log(this.state.currentSong.uniqueId, 'THIS IS THE UNIQUE ID');
+        // console.log(this.state, 'FROM FETCH')
+      })
       .then(() => {
         TrackPlayer.setupPlayer()
           .then(async () => {
@@ -144,16 +144,17 @@ class HomeScreen extends React.Component {
             await TrackPlayer.add(this.state.songs);
           })
           .catch(err => console.error(err));
-      })
+      });
   }
 
   play() {
     TrackPlayer.play();
-    TrackPlayer.getState()
-      .then((state) => this.setState({
+    TrackPlayer.getState().then(state =>
+      this.setState({
         currentState: state,
-        position: 0,
-      }))
+        position: 0
+      })
+    );
   }
 
   pause() {
@@ -166,10 +167,11 @@ class HomeScreen extends React.Component {
   }
 
   next() {
-    TrackPlayer.skipToNext()
-      .then(() => this.setState({
-        currentState: 'playing',
-      }));
+    TrackPlayer.skipToNext().then(() =>
+      this.setState({
+        currentState: 'playing'
+      })
+    );
     this.removeFromDB();
     this.fetchSongsAndSetupPlayer();
   }
@@ -181,41 +183,41 @@ class HomeScreen extends React.Component {
 
   rewind() {
     TrackPlayer.getPosition()
-      .then((pos) => this.setState({
-        position: pos,
-      }))
+      .then(pos =>
+        this.setState({
+          position: pos
+        })
+      )
       .then(() => {
         let { position } = this.state;
         if (position < 10) {
           TrackPlayer.seekTo(0);
           this.setState({
-            position: 0,
-          })
+            position: 0
+          });
         } else {
           TrackPlayer.seekTo(position - 10);
           this.setState({
-            position: position - 10,
-          })
+            position: position - 10
+          });
         }
-      })
+      });
   }
 
   queue() {
-    TrackPlayer.getQueue()
-      .then((data) => {
-        console.log(data, 'current player queue');
-      });
-    TrackPlayer.getCurrentTrack()
-      .then((data) => {
-        console.log(data, 'current track')
-      });
+    TrackPlayer.getQueue().then(data => {
+      console.log(data, 'current player queue');
+    });
+    TrackPlayer.getCurrentTrack().then(data => {
+      console.log(data, 'current track');
+    });
   }
 
   render() {
     const { currentState, currentSong } = this.state;
 
     return (
-      <View style={styles.homeScreenContainer} >
+      <View style={styles.homeScreenContainer}>
         <View style={styles.playlistContainer}>
           <View>
             <Playlist />
@@ -223,7 +225,16 @@ class HomeScreen extends React.Component {
         </View>
         <View style={styles.mediaContainer}>
           <View style={styles.mediaCtrls}>
-            <MediaCtrls state={currentState} currentSong={currentSong} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} queue={this.queue} />
+            <MediaCtrls
+              state={currentState}
+              currentSong={currentSong}
+              play={this.play}
+              pause={this.pause}
+              previous={this.previous}
+              next={this.next}
+              rewind={this.rewind}
+              queue={this.queue}
+            />
           </View>
         </View>
       </View>
@@ -301,36 +312,36 @@ const MainApp = createMaterialBottomTabNavigator(
       }
     }
   },
-    {
-      initialRouteName: 'Search',
-      order: ['Home', 'Search', 'Chat'],
-      // defaultNavigationOptions: {
-      //   headerStyle: {
-      //     backgroundColor: '#fff'
-      //   }
-      // },
-      barStyle: { backgroundColor: '#694fad' }
-    }
-)
+  {
+    initialRouteName: 'Search',
+    order: ['Home', 'Search', 'Chat'],
+    // defaultNavigationOptions: {
+    //   headerStyle: {
+    //     backgroundColor: '#fff'
+    //   }
+    // },
+    barStyle: { backgroundColor: '#694fad' }
+  }
+);
 
 const RootStack = createStackNavigator(
-{
-  Main: {
-    screen: MainApp,
+  {
+    Main: {
+      screen: MainApp
+    },
+    MyModal: {
+      screen: RoomScreen
+    }
   },
-  MyModal: {
-    screen: RoomScreen,
-  },
-},
-{
-  initialRouteName: 'MyModal',
-  mode: 'modal',
-  headerMode: 'none',
-}
+  {
+    initialRouteName: 'MyModal',
+    mode: 'modal',
+    headerMode: 'none'
+  }
 );
 
 // export default createAppContainer(MainApp)
-export default createAppContainer(RootStack)
+export default createAppContainer(RootStack);
 
 const styles = StyleSheet.create({
   signIn: {
@@ -341,7 +352,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#694fad',
     padding: 10,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   buttonText: {
     color: 'white'
@@ -354,33 +365,33 @@ const styles = StyleSheet.create({
   },
   homeScreenContainer: {
     display: 'flex',
-    flex: 6,
+    flex: 6
   },
   playlistContainer: {
     position: 'absolute',
     display: 'flex',
     flex: 5,
     top: 35,
-    width: '100%',
+    width: '100%'
   },
   mediaContainer: {
     position: 'absolute',
     display: 'flex',
     flex: 1,
-    bottom: 0,
+    bottom: 0
   },
   mediaCtrls: {
-    shadowColor: "#000000",
+    shadowColor: '#000000',
     shadowOpacity: 0.6,
     shadowRadius: 4,
     shadowOffset: {
       height: 1,
       width: 1
-    },
+    }
   },
   chatLogin: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center'
-  },
+  }
 });
