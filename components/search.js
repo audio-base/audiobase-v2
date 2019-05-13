@@ -11,7 +11,7 @@ let addItem = (item, title, artwork) => {
     url: item,
     title: title,
     artwork: artwork,
-    order: Math.floor(Math.random() * (2e4 - 1e4)) + 1e4,
+    order: '',
     artist: 'null',
     id: '0'
   });

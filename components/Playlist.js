@@ -82,8 +82,8 @@ class Playlist extends React.Component {
   // }
 
   fetch() {
-    let songData = {};
-    querySort.once('value', snapshot => {
+    let songData = { 0: [] };
+    querySort.on('value', snapshot => {
       let i = 0;
       let songOrder = [];
       snapshot.forEach(childSnapshot => {
@@ -144,7 +144,7 @@ class Playlist extends React.Component {
     //   });
     // });
     // // return data;
-    this.fetch();
+    // this.fetch();
   }
 
   renderItem(song, order) {
