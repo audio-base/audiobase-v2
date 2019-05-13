@@ -90,7 +90,7 @@ class Playlist extends React.Component {
         let childKey = childSnapshot.key;
         let data = childKey ? childSnapshot.val() : [];
         // let songs = data ? Object.values(data) : [];
-        // data.order = data.order ? data.order : i;
+        data.order = i;
         data.uniqueId = childKey;
         console.log(data.order);
         songData[i] = data;
@@ -125,6 +125,7 @@ class Playlist extends React.Component {
       }
       i++;
     }
+    // this.props.mediaFetch();
     // console.log(songsRef.orderByChild('order'));
     // let songData2 = {};
     // let songOrder2 = [];
@@ -215,7 +216,6 @@ class Playlist extends React.Component {
             () => {
               return (
                 this.updateState(this.state.songOrder, this.state.songs),
-                this.props.fetchSongsAndSetupPlayer(),
                 console.log(this.state)
               );
             }

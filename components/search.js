@@ -11,7 +11,7 @@ let addItem = (item, title, artwork, order) => {
     url: item,
     title: title,
     artwork: artwork,
-    order: order,
+    order: '',
     artist: 'null',
     id: '0'
   });
