@@ -4,7 +4,8 @@ import {
   Text,
   TextInput,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -18,24 +19,6 @@ import { db } from './config.js';
 console.disableYellowBox = true;
 
 let roomsRef = db.ref('/rooms/')
-
-// TrackPlayer.setupPlayer().then(async () => {
-//   await TrackPlayer.add({
-//     id: '496702374',
-//     url: 'https://api.soundcloud.com/tracks/255766429/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
-//     title: 'Street Lights - Kanye West',
-//     artist: 'null',
-//     artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
-//   })
-//   await TrackPlayer.add({
-//     id: '496702374',
-//     url: 'https://api.soundcloud.com/tracks/11591831/stream?client_id=FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7',
-//     title: 'Street Lights - Kanye West',
-//     artist: 'null',
-//     artwork: 'https://i1.sndcdn.com/artworks-000401422227-q9t0ac-large.jpg',
-//   });
-// });
-
 let songsRef = db.ref('/songs');
 
 class RoomScreen extends React.Component {
@@ -44,23 +27,23 @@ class RoomScreen extends React.Component {
     roomKey: ''
   };
 
-  validateRoom(){
+  validateRoom() {
     roomsRef.on('value', snapshot => {
       var data = snapshot.val();
       var fbRoomName = Object.keys(data)[0];
       var fbRoomKey = data.hrla28.key;
       var userRoom = this.state.roomName.toLowerCase();
       var userKey = this.state.roomKey.toLowerCase();
-      if(userRoom == fbRoomName && userKey == fbRoomKey){
+      if (userRoom == fbRoomName && userKey == fbRoomKey) {
         this.props.navigation.navigate('Main')
       } else {
         Alert.alert(
           'Unauthorized',
           'Invalid Audiobase or Key',
           [
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
           ],
-          {cancelable: false},
+          { cancelable: false },
         );
       }
     })
@@ -92,7 +75,7 @@ class RoomScreen extends React.Component {
           style={styles.button}
           onPress={() => this.validateRoom()}
         >
-        <Text style={styles.buttonText}>Join audiobase</Text>
+          <Text style={styles.buttonText}>Join audiobase</Text>
         </TouchableOpacity>
       </View>
     );
@@ -111,7 +94,7 @@ class HomeScreen extends React.Component {
     this.pause = this.pause.bind(this);
     this.next = this.next.bind(this);
     this.rewind = this.rewind.bind(this);
-    this.queue = this.queue.bind(this);
+    this.fetchSongsAndSetupPlayer = this.fetchSongsAndSetupPlayer.bind(this);
   }
 
   componentDidMount() {
@@ -122,25 +105,19 @@ class HomeScreen extends React.Component {
     songsRef.once('value', snapshot => {
       let data = snapshot.val();
       let songs = Object.values(data);
-      // console.log(data, 'THIS IS MY DATA');
       let i = 0;
       for (let id in data) {
         songs[i].uniqueId = id;
         i++;
       }
-
-      // console.log(songs, 'MY SONGSSSS');
       this.setState({
         songs: songs,
         currentSong: songs[0],
       });
-      console.log(this.state.currentSong.uniqueId, 'THIS IS THE UNIQUE ID')
-      // console.log(this.state, 'FROM FETCH')
     })
       .then(() => {
         TrackPlayer.setupPlayer()
           .then(async () => {
-            // console.log(this.state.songs, 'FROM SETUP')
             await TrackPlayer.add(this.state.songs);
           })
           .catch(err => console.error(err));
@@ -200,17 +177,6 @@ class HomeScreen extends React.Component {
       })
   }
 
-  queue() {
-    TrackPlayer.getQueue()
-      .then((data) => {
-        console.log(data, 'current player queue');
-      });
-    TrackPlayer.getCurrentTrack()
-      .then((data) => {
-        console.log(data, 'current track')
-      });
-  }
-
   render() {
     const { currentState, currentSong } = this.state;
 
@@ -223,7 +189,7 @@ class HomeScreen extends React.Component {
         </View>
         <View style={styles.mediaContainer}>
           <View style={styles.mediaCtrls}>
-            <MediaCtrls state={currentState} currentSong={currentSong} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} queue={this.queue} />
+            <MediaCtrls state={currentState} currentSong={currentSong} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} />
           </View>
         </View>
       </View>
@@ -301,32 +267,32 @@ const MainApp = createMaterialBottomTabNavigator(
       }
     }
   },
-    {
-      initialRouteName: 'Search',
-      order: ['Home', 'Search', 'Chat'],
-      // defaultNavigationOptions: {
-      //   headerStyle: {
-      //     backgroundColor: '#fff'
-      //   }
-      // },
-      barStyle: { backgroundColor: '#694fad' }
-    }
+  {
+    initialRouteName: 'Search',
+    order: ['Home', 'Search', 'Chat'],
+    // defaultNavigationOptions: {
+    //   headerStyle: {
+    //     backgroundColor: '#fff'
+    //   }
+    // },
+    barStyle: { backgroundColor: '#694fad' }
+  }
 )
 
 const RootStack = createStackNavigator(
-{
-  Main: {
-    screen: MainApp,
+  {
+    Main: {
+      screen: MainApp,
+    },
+    MyModal: {
+      screen: RoomScreen,
+    },
   },
-  MyModal: {
-    screen: RoomScreen,
-  },
-},
-{
-  initialRouteName: 'MyModal',
-  mode: 'modal',
-  headerMode: 'none',
-}
+  {
+    initialRouteName: 'MyModal',
+    mode: 'modal',
+    headerMode: 'none',
+  }
 );
 
 // export default createAppContainer(MainApp)

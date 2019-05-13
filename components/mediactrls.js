@@ -11,7 +11,6 @@ class MediaCtrls extends React.Component {
 
   onSwipeLeft(gestureState) {
     this.props.next();
-    this.props.queue();
   }
 
   render() {
@@ -21,7 +20,7 @@ class MediaCtrls extends React.Component {
       return (
         <GestureRecognizer onSwipeLeft={(state) => this.onSwipeLeft(state)}>
           <Image style={styles.image} source={{ uri: `${currentSong.artwork}` }} />
-          <Text style={styles.songTitle} >
+          <Text style={styles.songTitle} numberOfLines={1} ellipsizeMode="tail" >
             {currentSong.title}
           </Text>
           <View style={styles.buttonContainer}>
@@ -39,17 +38,17 @@ class MediaCtrls extends React.Component {
         <View>
           <GestureRecognizer onSwipeLeft={(state) => this.onSwipeLeft(state)}>
             <Image style={styles.image} source={{ uri: `${currentSong.artwork}` }} />
-            <Text style={styles.songTitle} >
+            <Text style={styles.songTitle} numberOfLines={1} ellipsizeMode="tail" >
               {currentSong.title}
             </Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity activeOpacity={0.0} onPress={rewind}>
-              <Image style={{ width: 40, height: 40 }} source={require('../img/rewind-10-black.png')} />
-            </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.0} onPress={play}>
-              <Image style={{ width: 40, height: 40 }} source={require('../img/play-black.png')} />
-            </TouchableOpacity>
-          </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity activeOpacity={0.0} onPress={rewind}>
+                <Image style={{ width: 40, height: 40 }} source={require('../img/rewind-10-black.png')} />
+              </TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.0} onPress={play}>
+                <Image style={{ width: 40, height: 40 }} source={require('../img/play-black.png')} />
+              </TouchableOpacity>
+            </View>
           </GestureRecognizer>
         </View >
       )
@@ -66,7 +65,6 @@ const styles = StyleSheet.create({
     maxHeight: '100%',
     height: 60,
     paddingRight: 14,
-    // top: '100%',
     backgroundColor: '#e5e5e5',
   },
   image: {
@@ -83,7 +81,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 72,
     fontSize: 17,
+    width: 200,
   },
+  textContainer: {
+    width: 100,
+  }
 });
 
 export default MediaCtrls;
