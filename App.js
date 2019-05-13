@@ -35,18 +35,16 @@ class RoomScreen extends React.Component {
       var userRoom = this.state.roomName.toLowerCase();
       var userKey = this.state.roomKey.toLowerCase();
       if (userRoom == fbRoomName && userKey == fbRoomKey) {
-        this.props.navigation.navigate('Main')
+        this.props.navigation.navigate('Main');
       } else {
         Alert.alert(
           'Unauthorized',
           'Invalid Audiobase or Key',
-          [
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
-          ],
-          { cancelable: false },
+          [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+          { cancelable: false }
         );
       }
-    })
+    });
   }
 
   render() {
@@ -88,7 +86,7 @@ class HomeScreen extends React.Component {
     this.state = {
       currentState: 'idle',
       songs: [],
-      currentSong: {},
+      currentSong: {}
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
@@ -121,16 +119,17 @@ class HomeScreen extends React.Component {
             await TrackPlayer.add(this.state.songs);
           })
           .catch(err => console.error(err));
-      })
+      });
   }
 
   play() {
     TrackPlayer.play();
-    TrackPlayer.getState()
-      .then((state) => this.setState({
+    TrackPlayer.getState().then(state =>
+      this.setState({
         currentState: state,
-        position: 0,
-      }))
+        position: 0
+      })
+    );
   }
 
   pause() {
@@ -143,10 +142,11 @@ class HomeScreen extends React.Component {
   }
 
   next() {
-    TrackPlayer.skipToNext()
-      .then(() => this.setState({
-        currentState: 'playing',
-      }));
+    TrackPlayer.skipToNext().then(() =>
+      this.setState({
+        currentState: 'playing'
+      })
+    );
     this.removeFromDB();
     this.fetchSongsAndSetupPlayer();
   }
@@ -158,30 +158,32 @@ class HomeScreen extends React.Component {
 
   rewind() {
     TrackPlayer.getPosition()
-      .then((pos) => this.setState({
-        position: pos,
-      }))
+      .then(pos =>
+        this.setState({
+          position: pos
+        })
+      )
       .then(() => {
         let { position } = this.state;
         if (position < 10) {
           TrackPlayer.seekTo(0);
           this.setState({
-            position: 0,
-          })
+            position: 0
+          });
         } else {
           TrackPlayer.seekTo(position - 10);
           this.setState({
-            position: position - 10,
-          })
+            position: position - 10
+          });
         }
-      })
+      });
   }
 
   render() {
     const { currentState, currentSong } = this.state;
 
     return (
-      <View style={styles.homeScreenContainer} >
+      <View style={styles.homeScreenContainer}>
         <View style={styles.playlistContainer}>
           <View>
             <Playlist />
@@ -277,16 +279,16 @@ const MainApp = createMaterialBottomTabNavigator(
     // },
     barStyle: { backgroundColor: '#694fad' }
   }
-)
+);
 
 const RootStack = createStackNavigator(
   {
     Main: {
-      screen: MainApp,
+      screen: MainApp
     },
     MyModal: {
-      screen: RoomScreen,
-    },
+      screen: RoomScreen
+    }
   },
   {
     initialRouteName: 'MyModal',
@@ -296,7 +298,7 @@ const RootStack = createStackNavigator(
 );
 
 // export default createAppContainer(MainApp)
-export default createAppContainer(RootStack)
+export default createAppContainer(RootStack);
 
 const styles = StyleSheet.create({
   signIn: {
@@ -307,7 +309,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#694fad',
     padding: 10,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   buttonText: {
     color: 'white'
@@ -320,33 +322,33 @@ const styles = StyleSheet.create({
   },
   homeScreenContainer: {
     display: 'flex',
-    flex: 6,
+    flex: 6
   },
   playlistContainer: {
     position: 'absolute',
     display: 'flex',
     flex: 5,
     top: 35,
-    width: '100%',
+    width: '100%'
   },
   mediaContainer: {
     position: 'absolute',
     display: 'flex',
     flex: 1,
-    bottom: 0,
+    bottom: 0
   },
   mediaCtrls: {
-    shadowColor: "#000000",
+    shadowColor: '#000000',
     shadowOpacity: 0.6,
     shadowRadius: 4,
     shadowOffset: {
       height: 1,
       width: 1
-    },
+    }
   },
   chatLogin: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center'
-  },
+  }
 });
