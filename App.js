@@ -18,7 +18,8 @@ import Chatbox from './components/Chat/Chatbox.js';
 import { db } from './config.js';
 console.disableYellowBox = true;
 
-let roomsRef = db.ref('/rooms/')
+let roomsRef = db.ref('/rooms/');
+
 let songsRef = db.ref('/songs');
 
 class RoomScreen extends React.Component {
@@ -50,16 +51,14 @@ class RoomScreen extends React.Component {
   render() {
     return (
       <View style={styles.signIn}>
-        <View>
-          <Text style={styles.title}>Audiobase Name:</Text>
-          <TextInput
-            style={styles.nameInput}
-            textAlign="center"
-            autoCorrect={false}
-            onSubmitEditing={this.onSubmitEdit}
-            onChangeText={roomName => this.setState({ roomName })}
-          />
-        </View>
+        <Text style={styles.title}>Audiobase Name:</Text>
+        <TextInput
+          style={styles.nameInput}
+          textAlign="center"
+          autoCorrect={false}
+          onSubmitEditing={this.onSubmitEdit}
+          onChangeText={roomName => this.setState({ roomName })}
+        />
         <Text style={styles.title}>Key:</Text>
         <TextInput
           style={styles.nameInput}
@@ -86,17 +85,29 @@ class HomeScreen extends React.Component {
     this.state = {
       currentState: 'idle',
       songs: [],
-      currentSong: {}
+      currentSong: {},
+      isSorted: false,
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
     this.next = this.next.bind(this);
     this.rewind = this.rewind.bind(this);
     this.fetchSongsAndSetupPlayer = this.fetchSongsAndSetupPlayer.bind(this);
+    this.handleSorted = this.handleSorted.bind(this);
   }
 
   componentDidMount() {
     this.fetchSongsAndSetupPlayer();
+  }
+
+  handleSorted() {
+    // this.setState({
+    //   isSorted: true,
+    // })
+    // setTimeout(
+    //   this.setState({
+    //     isSorted: false,
+    //   }), 300)
   }
 
   fetchSongsAndSetupPlayer() {
@@ -180,13 +191,13 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    const { currentState, currentSong } = this.state;
+    const { currentState, currentSong, isSorted} = this.state;
 
     return (
       <View style={styles.homeScreenContainer}>
         <View style={styles.playlistContainer}>
           <View>
-            <Playlist />
+            <Playlist mediaFetch={this.fetchSongsAndSetupPlayer} />
           </View>
         </View>
         <View style={styles.mediaContainer}>
@@ -228,7 +239,9 @@ class ChatScreen extends React.Component {
             onSubmitEditing={this.onSubmitEdit}
             onChangeText={text => this.setState({ text })}
           />
-          <TouchableOpacity onPress={this.onSubmitEdit}>
+          <TouchableOpacity 
+            style={styles.button}
+            onPress={this.onSubmitEdit}>
             <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>
         </View>
@@ -244,6 +257,7 @@ const MainApp = createMaterialBottomTabNavigator(
     Home: {
       screen: HomeScreen,
       navigationOptions: {
+        gesturesEnabled: false,
         tabBarLabel: 'Home',
         tabBarIcon: ({ tintColor }) => (
           <Icon name="ios-home" color={tintColor} size={24} />
@@ -253,6 +267,7 @@ const MainApp = createMaterialBottomTabNavigator(
     Search: {
       screen: SearchScreen,
       navigationOptions: {
+        gesturesEnabled: false,
         tabBarLabel: 'Search',
         tabBarIcon: ({ tintColor }) => (
           <Icon name="ios-search" color={tintColor} size={24} />
@@ -262,6 +277,7 @@ const MainApp = createMaterialBottomTabNavigator(
     Chat: {
       screen: ChatScreen,
       navigationOptions: {
+        gesturesEnabled: false,
         tabBarLabel: 'Chat',
         tabBarIcon: ({ tintColor }) => (
           <Icon name="md-chatboxes" color={tintColor} size={24} />
@@ -284,7 +300,10 @@ const MainApp = createMaterialBottomTabNavigator(
 const RootStack = createStackNavigator(
   {
     Main: {
-      screen: MainApp
+      screen: MainApp,
+      navigationOptions: {
+        gesturesEnabled: false,
+      }
     },
     MyModal: {
       screen: RoomScreen
@@ -301,18 +320,33 @@ const RootStack = createStackNavigator(
 export default createAppContainer(RootStack);
 
 const styles = StyleSheet.create({
+  title: {
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  nameInput: {
+    borderColor: '#694fad',
+    borderBottomWidth: 1,
+    margin: 10,
+    width: '80%',
+    fontSize: 16,
+  },
   signIn: {
     paddingVertical: 20,
     flex: 2,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: 16,
   },
   button: {
     backgroundColor: '#694fad',
     padding: 10,
-    alignItems: 'center'
+    alignItems: 'center',
+    width: '70%',
   },
   buttonText: {
-    color: 'white'
+    color: 'white',
+    fontSize: 16,
   },
   appContainer: {
     flex: 1,
@@ -349,6 +383,8 @@ const styles = StyleSheet.create({
   chatLogin: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: 16,
   }
 });
