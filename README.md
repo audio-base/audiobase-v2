@@ -10,11 +10,11 @@ An iOS/Android app using React Native, Firebase, and JavaScript
 
 ## Usage
 
-1. react-native run-ios OR react-native run-android
-2. Create a copy of the example_config.js and rename it config.js
-3. Enter your Soundcloud API key and Firebase API key in your config.js
-4. Enter Audiobase name: Hrla28
-5. Enter Key: Hrla28key
+1. Create a copy of the example_config.js and rename it config.js
+2. Enter your Soundcloud API key and Firebase API key in your config.js
+3. Open terminal and enter react-native run-ios OR react-native run-android
+4. In the app enter Audiobase name: Hrla28
+5. In the app enter Key: Hrla28key
 6. Add Songs to the queue BEFORE clicking home
 
 ## Requirements
