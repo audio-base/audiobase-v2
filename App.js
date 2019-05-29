@@ -5,7 +5,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  Alert,
+  Alert
 } from 'react-native';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -86,7 +86,7 @@ class HomeScreen extends React.Component {
       currentState: 'idle',
       songs: [],
       currentSong: {},
-      isSorted: false,
+      isSorted: false
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
@@ -111,26 +111,43 @@ class HomeScreen extends React.Component {
   }
 
   fetchSongsAndSetupPlayer() {
-    songsRef.once('value', snapshot => {
+    songsRef.on('value', snapshot => {
       let data = snapshot.val();
-      let songs = Object.values(data);
+      let songs = data ? Object.values(data) : [];
       let i = 0;
       for (let id in data) {
         songs[i].uniqueId = id;
         i++;
       }
-      this.setState({
-        songs: songs,
-        currentSong: songs[0],
-      });
-    })
-      .then(() => {
-        TrackPlayer.setupPlayer()
-          .then(async () => {
-            await TrackPlayer.add(this.state.songs);
-          })
-          .catch(err => console.error(err));
-      });
+      this.setState(
+        {
+          songs: songs,
+          currentSong: songs[0]
+            ? songs[0]
+            : {
+                artist: 'null',
+                artwork: '',
+                id: '0',
+                title: '',
+                url: 'null'
+              }
+        },
+        () => {
+          // TrackPlayer.setupPlayer();
+          // .then(() => {
+          TrackPlayer.add(this.state.songs);
+          // })
+          // .catch(err => console.error(err));
+        }
+      );
+    });
+    // .then(() => {
+    //   TrackPlayer.setupPlayer()
+    //     .then(async () => {
+    //       await TrackPlayer.add(this.state.songs);
+    //     })
+    //     .catch(err => console.error(err));
+    // });
   }
 
   play() {
@@ -159,7 +176,7 @@ class HomeScreen extends React.Component {
       })
     );
     this.removeFromDB();
-    this.fetchSongsAndSetupPlayer();
+    // this.fetchSongsAndSetupPlayer();
   }
 
   removeFromDB() {
@@ -191,7 +208,7 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    const { currentState, currentSong, isSorted} = this.state;
+    const { currentState, currentSong, isSorted } = this.state;
 
     return (
       <View style={styles.homeScreenContainer}>
@@ -202,7 +219,15 @@ class HomeScreen extends React.Component {
         </View>
         <View style={styles.mediaContainer}>
           <View style={styles.mediaCtrls}>
-            <MediaCtrls state={currentState} currentSong={currentSong} play={this.play} pause={this.pause} previous={this.previous} next={this.next} rewind={this.rewind} />
+            <MediaCtrls
+              state={currentState}
+              currentSong={currentSong}
+              play={this.play}
+              pause={this.pause}
+              previous={this.previous}
+              next={this.next}
+              rewind={this.rewind}
+            />
           </View>
         </View>
       </View>
@@ -239,9 +264,7 @@ class ChatScreen extends React.Component {
             onSubmitEditing={this.onSubmitEdit}
             onChangeText={text => this.setState({ text })}
           />
-          <TouchableOpacity 
-            style={styles.button}
-            onPress={this.onSubmitEdit}>
+          <TouchableOpacity style={styles.button} onPress={this.onSubmitEdit}>
             <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>
         </View>
@@ -286,7 +309,7 @@ const MainApp = createMaterialBottomTabNavigator(
     }
   },
   {
-    initialRouteName: 'Search',
+    initialRouteName: 'Home',
     order: ['Home', 'Search', 'Chat'],
     // defaultNavigationOptions: {
     //   headerStyle: {
@@ -302,7 +325,7 @@ const RootStack = createStackNavigator(
     Main: {
       screen: MainApp,
       navigationOptions: {
-        gesturesEnabled: false,
+        gesturesEnabled: false
       }
     },
     MyModal: {
@@ -312,41 +335,42 @@ const RootStack = createStackNavigator(
   {
     initialRouteName: 'MyModal',
     mode: 'modal',
-    headerMode: 'none',
+    headerMode: 'none'
   }
 );
 
-// export default createAppContainer(MainApp)
+//to start without having to signIn uncomment the next line and comment out the line after it
+// export default createAppContainer(MainApp);
 export default createAppContainer(RootStack);
 
 const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 16
   },
   nameInput: {
     borderColor: '#694fad',
     borderBottomWidth: 1,
     margin: 10,
     width: '80%',
-    fontSize: 16,
+    fontSize: 16
   },
   signIn: {
     paddingVertical: 20,
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    fontSize: 16,
+    fontSize: 16
   },
   button: {
     backgroundColor: '#694fad',
     padding: 10,
     alignItems: 'center',
-    width: '70%',
+    width: '70%'
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 16
   },
   appContainer: {
     flex: 1,
@@ -385,6 +409,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    fontSize: 16,
+    fontSize: 16
   }
 });

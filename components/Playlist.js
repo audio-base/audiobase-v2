@@ -29,43 +29,36 @@ class Playlist extends React.Component {
       snapshot.forEach(childSnapshot => {
         let childKey = childSnapshot.key;
         let data = childKey ? childSnapshot.val() : [];
-        // let songs = data ? Object.values(data) : [];
         data.order = i;
         data.uniqueId = childKey;
-        // console.log(data.order);
         songData[i] = data;
         songOrder.push(i);
         i++;
       });
-      // songs.forEach((song, i) => (songData[i] = song));
-      this.setState(
-        {
-          songs: songData,
-          songOrder: songOrder
-        },
-        () => console.log(this.state)
-      );
+      this.setState({
+        songs: songData,
+        songOrder: songOrder
+      });
     });
   }
 
   handleRemove(uniqueId) {
-    return songsRef.child(uniqueId).remove(), this.fetch();
+    songsRef.child(uniqueId).remove();
+    this.fetch();
   }
 
   updateState(order, data) {
     let update = {};
-    console.log(data);
     for (let key in data) {
       update[`${data[key].uniqueId}/order`] = order.findIndex(
         element => element === data[key].order
       );
-      console.log(data[key].title, update);
     }
     //utilized firebase multiple update method to avoid the .on method from using its callback param on every change to the database values.
     songsRef.update(update);
   }
 
-  renderItem(song, order) {
+  renderItem(song) {
     return (
       <TouchableHighlight
         underlayColor={'#eee'}
@@ -113,7 +106,6 @@ class Playlist extends React.Component {
           let order = this.state.songOrder;
           //changes the order when moved
           order.splice(e.to, 0, order.splice(e.from, 1)[0]);
-          console.log(order);
           this.forceUpdate();
           this.setState(
             {

@@ -43,17 +43,19 @@ class Search extends React.Component {
     let limit = 20;
     let page = 0;
     let query = this.state.query;
-    axios
-      .get(
-        `https://api-v2.soundcloud.com/search/tracks?q=${query}&client_id=${SC_KEY}&limit=${limit}&offset=${page *
-          limit}&linked_partitioning=1`
-      )
-      .then(response =>
-        this.setState({
-          data: response.data.collection
-        })
-      )
-      .catch(error => console.error(error));
+    if (query) {
+      axios
+        .get(
+          `https://api-v2.soundcloud.com/search/tracks?q=${query}&client_id=${SC_KEY}&limit=${limit}&offset=${page *
+            limit}&linked_partitioning=1`
+        )
+        .then(response =>
+          this.setState({
+            data: response.data.collection
+          })
+        )
+        .catch(error => console.error(error));
+    }
   }
   addSong(uri, title, artwork, i) {
     this.setState(
