@@ -13,6 +13,8 @@ An iOS/Android app using React Native, Firebase, and JavaScript
 
 ## Demo
 
+Video Demo: https://www.youtube.com/watch?v=SES5uDwUIJo&feature=youtu.be
+
 ![Audiobase login / song adding demo](https://media.giphy.com/media/eMyGTDq1jvobtlhb8Q/giphy.gif)
 
 ![Audiobase editing queue demo](https://media.giphy.com/media/h52bkhYXzg2JGvFzsJ/giphy.gif)
