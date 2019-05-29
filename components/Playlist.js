@@ -1,17 +1,11 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableHighlight,
-  StyleSheet,
-  FlatList
-} from 'react-native';
+import { View, Text, TouchableHighlight, StyleSheet } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { db } from '../config.js';
 import SortableListView from 'react-native-sortable-listview';
 
-let songsRef = db.ref('/songs'); //grab songs from the key songs in db
+let songsRef = db.ref('/songs');
 let querySort = songsRef.orderByChild('order');
 
 class Playlist extends React.Component {
@@ -22,64 +16,10 @@ class Playlist extends React.Component {
       songOrder: []
     };
     this.updateState = this.updateState.bind(this);
-    // this.fetch = this.fetch.bind(this);
-    // this.fetchSort = this.fetchSort.bind(this);
   }
   componentDidMount() {
     this.fetch();
   }
-
-  // fetch() {
-  //   querySort.on('value', snapshot => {
-  //     let data = snapshot.val();
-  //     let songs = data ? Object.values(data) : [];
-  //     // let i = 0;
-  //     let previousOrder = 0;
-  //     for (let key in data) {
-  //       if (!data[key].hasOwnProperty('order')) {
-  //         songs[previousOrder + 1].order = previousOrder + 1;
-  //       } else {
-  //         songs[data[key].order] = data[key].order;
-  //       }
-  //       // songs[data[key].order].id = key;
-  //       previousOrder = data[key].order;
-  //       // i++;
-  //     }
-  //     let songData = {};
-  //     songs.forEach((song, i) => (songData[i] = song));
-  //     this.setState(
-  //       {
-  //         songs: songData,
-  //         songOrder: Object.keys(songs)
-  //       },
-  //       () => console.log(this.state)
-  //     );
-  //     // songData = songs;
-  //     // console.log(this.state.songs);
-  //   });
-  // }
-  // fetchSort() {
-  //   querySort.on('value', snapshot => {
-  //     let data = snapshot.val();
-  //     let songs = data ? Object.values(data) : [];
-  //     let songData = {};
-  //     let i = 0;
-  //     console.log(songs);
-  //     for (let key in data) {
-  //       songs[i].key = key;
-  //       songs[i].order = data[key].order;
-  //       i++;
-  //     }
-  //     songs.forEach((song, i) => (songData[i] = song));
-  //     this.setState(
-  //       {
-  //         songs: songData,
-  //         songOrder: Object.keys(songs)
-  //       },
-  //       () => console.log(this.state)
-  //     );
-  //   });
-  // }
 
   fetch() {
     let songData = { 0: [] };
@@ -113,51 +53,19 @@ class Playlist extends React.Component {
   }
 
   updateState(order, data) {
-    // let i = 0;
     let update = {};
     console.log(data);
     for (let key in data) {
-      //compare current order and change the data.order to that number and update the database
-      // console.log(data);
-      //if (data[key].order !== order[i]) {
-      // data[key].order = order[i];
-      // update['/order'] = parseInt(order[i]); //change to number so i can get a sorted array on fetch
-      // update[`${data[key].uniqueId}/order`] = parseInt(order[i]);
       update[`${data[key].uniqueId}/order`] = order.findIndex(
         element => element === data[key].order
       );
       console.log(data[key].title, update);
-      // songsRef.child(data[key].uniqueId).update(update);
-      //}
-      // i++;
     }
+    //utilized firebase multiple update method to avoid the .on method from using its callback param on every change to the database values.
     songsRef.update(update);
-    // this.fetch();
-    // this.props.mediaFetch();
-    // console.log(songsRef.orderByChild('order'));
-    // let songData2 = {};
-    // let songOrder2 = [];
-    // songsRef.orderByChild('order').on('value', snapshot => {
-    //   console.log(snapshot);
-    //   snapshot.forEach(function(childSnapshot) {
-    //     var childKey = childSnapshot.key;
-    //     var childData = childSnapshot.val();
-    //     // console.log(childKey);
-    //     songData2[childData.order] = childData;
-    //     songOrder2.push(childData.order);
-    //     // console.log(childData);
-    //   });
-    //   this.setState({
-    //     songs: songData2,
-    //     songOrder: songOrder2
-    //   });
-    // });
-    // // return data;
-    // this.fetch();
   }
 
   renderItem(song, order) {
-    // console.log(data);
     return (
       <TouchableHighlight
         underlayColor={'#eee'}
@@ -171,14 +79,8 @@ class Playlist extends React.Component {
         // {...data.sortHandlers}
         onPress={() => console.log(this.state.songOrder)}
       >
-        <View
-        // style={styles.songContainer}
-        // uri={song.uri}
-
-        // enableEmptySections
-        >
+        <View>
           <ListItem
-            // style={styles.songContainer}
             leftAvatar={{
               source: {
                 uri: song.artwork
@@ -196,26 +98,21 @@ class Playlist extends React.Component {
               />
             }
           />
-          {/* <Text>{song.title}</Text> */}
         </View>
       </TouchableHighlight>
     );
   }
 
   render() {
-    // songData = this.state.songs;
-    // console.log(data[0]);
     return (
       <SortableListView
         style={styles.playlistContainer}
-        // style={{ flex: 1 }}
         data={this.state.songs}
-        // order={Object.keys(this.state.songs)}
-        // data={data}
         order={this.state.songOrder}
         onRowMoved={e => {
           let order = this.state.songOrder;
-          order.splice(e.to, 0, order.splice(e.from, 1)[0]); //changes the order when moved
+          //changes the order when moved
+          order.splice(e.to, 0, order.splice(e.from, 1)[0]);
           console.log(order);
           this.forceUpdate();
           this.setState(
@@ -224,11 +121,11 @@ class Playlist extends React.Component {
             },
             () => {
               return this.updateState(this.state.songOrder, this.state.songs);
-              // console.log(this.state)
             }
           );
         }}
-        renderRow={(row, order) => this.renderItem(row, order)} //passes individual item in the list to renderItem
+        //passes individual songs in the list to renderItem
+        renderRow={(row, order) => this.renderItem(row, order)}
       />
     );
   }
@@ -237,13 +134,13 @@ class Playlist extends React.Component {
 const styles = StyleSheet.create({
   playlistContainer: {
     width: '100%'
-  },
-  songContainer: {
-    // flex: 1,
-    // height: 50,
-    width: '100%'
-    // flexDirection: 'column'
   }
+  // songContainer: {
+  //   // flex: 1,
+  //   // height: 50,
+  //   width: '100%'
+  //   // flexDirection: 'column'
+  // }
 });
 
 export default Playlist;
