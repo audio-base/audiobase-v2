@@ -1,13 +1,23 @@
 # Audiobase
 
 An iOS/Android app using React Native, Firebase, and JavaScript
-![] (https://media.giphy.com/media/eMyGTDq1jvobtlhb8Q/giphy.gif)
+
+
 
 ## Table of Contents
 
-1. [Usage](#Usage)
+1. [Demo](#demo)
+1. [Usage](#usage)
 1. [Requirements](#requirements)
 1. [Development](#development)
+
+## Demo
+
+![Audiobase login / song adding demo](https://media.giphy.com/media/eMyGTDq1jvobtlhb8Q/giphy.gif)
+
+![Audiobase editing queue demo](https://media.giphy.com/media/h52bkhYXzg2JGvFzsJ/giphy.gif)
+
+![Audiobase chat demo](https://media.giphy.com/media/PhZ0hKVmdNncRJBEIG/giphy.gif)
 
 ## Usage
 
