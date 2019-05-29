@@ -1,6 +1,7 @@
 # Audiobase
 
 An iOS/Android app using React Native, Firebase, and JavaScript
+![] (https://media.giphy.com/media/eMyGTDq1jvobtlhb8Q/giphy.gif)
 
 ## Table of Contents
 
@@ -15,7 +16,6 @@ An iOS/Android app using React Native, Firebase, and JavaScript
 3. Open terminal and enter react-native run-ios OR react-native run-android
 4. In the app enter Audiobase name: Hrla28
 5. In the app enter Key: Hrla28key
-6. Add Songs to the queue BEFORE clicking home
 
 ## Requirements
 
