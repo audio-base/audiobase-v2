@@ -90,9 +90,9 @@ class Playlist extends React.Component {
         let childKey = childSnapshot.key;
         let data = childKey ? childSnapshot.val() : [];
         // let songs = data ? Object.values(data) : [];
-        // data.order = data.order ? data.order : i;
+        data.order = i;
         data.uniqueId = childKey;
-        console.log(data.order);
+        // console.log(data.order);
         songData[i] = data;
         songOrder.push(i);
         i++;
@@ -109,22 +109,31 @@ class Playlist extends React.Component {
   }
 
   handleRemove(uniqueId) {
-    console.log(uniqueId);
-    return songsRef.child(uniqueId).remove();
+    return songsRef.child(uniqueId).remove(), this.fetch();
   }
 
   updateState(order, data) {
-    let i = 0;
+    // let i = 0;
+    let update = {};
+    console.log(data);
     for (let key in data) {
-      let update = {};
       //compare current order and change the data.order to that number and update the database
-      if (data[key].order !== order[i]) {
-        data[key].order = order[i];
-        update['/order'] = parseInt(order[i]); //change to number so i can get a sorted array on fetch
-        songsRef.child(data[key].uniqueId).update(update);
-      }
-      i++;
+      // console.log(data);
+      //if (data[key].order !== order[i]) {
+      // data[key].order = order[i];
+      // update['/order'] = parseInt(order[i]); //change to number so i can get a sorted array on fetch
+      // update[`${data[key].uniqueId}/order`] = parseInt(order[i]);
+      update[`${data[key].uniqueId}/order`] = order.findIndex(
+        element => element === data[key].order
+      );
+      console.log(data[key].title, update);
+      // songsRef.child(data[key].uniqueId).update(update);
+      //}
+      // i++;
     }
+    songsRef.update(update);
+    // this.fetch();
+    // this.props.mediaFetch();
     // console.log(songsRef.orderByChild('order'));
     // let songData2 = {};
     // let songOrder2 = [];
@@ -207,17 +216,15 @@ class Playlist extends React.Component {
         onRowMoved={e => {
           let order = this.state.songOrder;
           order.splice(e.to, 0, order.splice(e.from, 1)[0]); //changes the order when moved
+          console.log(order);
           this.forceUpdate();
           this.setState(
             {
               songOrder: order
             },
             () => {
-              return (
-                this.updateState(this.state.songOrder, this.state.songs),
-                this.props.fetchSongsAndSetupPlayer(),
-                console.log(this.state)
-              );
+              return this.updateState(this.state.songOrder, this.state.songs);
+              // console.log(this.state)
             }
           );
         }}

@@ -6,7 +6,7 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons';
 // import { FlatList } from 'react-native-gesture-handler';
 
-let addItem = (item, title, artwork) => {
+let addItem = (item, title, artwork, order) => {
   db.ref('/songs').push({
     url: item,
     title: title,
@@ -29,7 +29,8 @@ class Search extends React.Component {
       query: '',
       uri: '',
       title: '',
-      artwork: ''
+      artwork: '',
+      order: 0
     };
     this.handleSearch = this.handleSearch.bind(this);
     this.addSong = this.addSong.bind(this);
@@ -54,14 +55,21 @@ class Search extends React.Component {
       )
       .catch(error => console.error(error));
   }
-  addSong(uri, title, artwork) {
+  addSong(uri, title, artwork, i) {
     this.setState(
       {
         url: `${uri}/stream?client_id=${SC_KEY}`,
         title: title,
-        artwork: artwork
+        artwork: artwork,
+        order: i
       },
-      () => addItem(this.state.url, this.state.title, this.state.artwork)
+      () =>
+        addItem(
+          this.state.url,
+          this.state.title,
+          this.state.artwork,
+          this.state.order
+        )
     );
   }
   // renderItem(obj) {
@@ -131,7 +139,8 @@ class Search extends React.Component {
                       this.addSong(
                         obj.uri,
                         obj.title,
-                        obj.artwork_url ? obj.artwork_url : obj.user.avatar_url
+                        obj.artwork_url ? obj.artwork_url : obj.user.avatar_url,
+                        i
                       )
                     }
                   />
