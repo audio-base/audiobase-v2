@@ -74,38 +74,7 @@ class Search extends React.Component {
         )
     );
   }
-  // renderItem(obj) {
-  //   return this.state.data.map((obj, i) => {
-  //     return (
 
-  //       <ListItem
-  //         key={i}
-  //         leftAvatar={{
-  //           source: {
-  //             uri: obj.artwork_url ? obj.artwork_url : obj.user.avatar_url
-  //           }
-  //         }}
-  //         title={obj.title}
-  //         rightElement={
-  //           <Icon
-  //             containerStyle={{ alignSelf: 'flex-start' }}
-  //             type="material"
-  //             color="#C8C8C8"
-  //             name="md-add"
-  //             onPress={() =>
-  //               this.addSong(
-  //                 obj.uri,
-  //                 obj.title,
-  //                 obj.artwork_url ? obj.artwork_url : obj.user.avatar_url
-  //               )
-  //             }
-  //           />
-  //         }
-  //       />
-
-  //     );
-  //   });
-  // }
   render() {
     return (
       <ScrollView style={styles.searchContainer}>
@@ -152,24 +121,6 @@ class Search extends React.Component {
           );
         })}
       </ScrollView>
-      // <FlatList
-      //   style={styles.searchContainer}
-      //   data={this.state.data}
-      //   renderItem={this.renderItem}
-      //   ListHeaderComponent={
-      //     <SearchBar
-      //       style={styles.searchBar}
-      //       clearTextOnFocus={false}
-      //       placeholder="search"
-      //       autoCorrect={false}
-      //       onChangeText={text => this.setState({ query: text })}
-      //       value={this.state.query}
-      //       onSubmitEditing={this.handleSearch}
-      //       platform="ios"
-      //       // showLoading={true}
-      //     />
-      //   }
-      // />
     );
   }
 }
